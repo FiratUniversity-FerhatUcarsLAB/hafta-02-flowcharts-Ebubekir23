@@ -1,5 +1,12 @@
 Öğrenci Ad-Soyad: Ebubekir Yılmaz
 Öğrenci No: 250541051
+Elbette, istediğiniz formatta **Hastane Randevu Sistemi** ve **Üniversite Ders Kayıt Sistemi** için sözde kodları (pseudocode) yeniden düzenledim. Bu format, girintilerle kodun akışını ve mantığını daha net gösterir.
+
+-----
+
+### **HASTANE RANDEVU SİSTEMİ PSEUDOCODE**
+
+```
 BAŞLA
   OKU KullaniciID, Sifre
   pin_hak = 3
