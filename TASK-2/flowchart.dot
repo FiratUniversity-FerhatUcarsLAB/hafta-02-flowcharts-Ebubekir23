@@ -1,0 +1,135 @@
+Öğrenci Ad-Soyad: Ebubekir Yılmaz
+Öğrenci No: 250541051
+digraph ECommerce {
+    rankdir=TB;
+    node [fontname="Arial"];
+
+    start [label="BAŞLA", shape=oval, style=filled, fillcolor=lightgreen];
+    end [label="BİTİR", shape=oval, style=filled, fillcolor=lightgreen];
+
+    init [label="Değişkenleri başlat\n(sepet=boş, toplam=0, indirim=0...)", shape=box];
+
+    login_choice [label="Giriş yap / Misafir devam et?", shape=parallelogram];
+    login_check [label="Kullanıcı girişi başarılı mı?", shape=diamond];
+    login_ok [label="Giriş başarılı", shape=parallelogram];
+    login_guest [label="Misafir olarak devam", shape=parallelogram];
+
+    ask_product [label="Ürün ID gir (0 çıkış)", shape=parallelogram];
+    check_exit [label="Ürün ID = 0 mı?", shape=diamond];
+    ask_qty [label="Adet gir", shape=parallelogram];
+    stock_check [label="Stok yeterli mi?", shape=diamond];
+    add_cart [label="Ürün sepete eklendi", shape=parallelogram];
+    stock_fail [label="Yetersiz stok uyarısı", shape=parallelogram];
+
+    show_cart [label="Sepeti göster", shape=parallelogram];
+    change_qty_q [label="Adet değiştirmek ister misiniz?", shape=diamond];
+    ask_new_qty [label="Yeni adet gir", shape=parallelogram];
+    check_new_stock [label="Yeni stok yeterli mi?", shape=diamond];
+    update_qty [label="Adet güncellendi", shape=parallelogram];
+    fail_qty [label="Stok yetersiz, değişiklik iptal", shape=parallelogram];
+
+    ask_coupon [label="İndirim kodu gir (YOK=geç)", shape=parallelogram];
+    check_coupon [label="Kod geçerli mi?", shape=diamond];
+    apply_coupon [label="İndirim uygulandı", shape=parallelogram];
+    invalid_coupon [label="Geçersiz / süresi dolmuş kod", shape=parallelogram];
+
+    ask_address [label="Kargo adresi gir", shape=parallelogram];
+    calc_shipping [label="Kargo ücretini hesapla", shape=box];
+    check_free_ship [label="Toplam ≥ 1000 TL mi?", shape=diamond];
+    free_ship [label="Ücretsiz kargo uygulandı", shape=parallelogram];
+
+    calc_total [label="Toplam = Ürünler - indirim + kargo", shape=box];
+    show_total [label="Sepet toplamını göster", shape=parallelogram];
+
+    payment_method [label="Ödeme yöntemi seç (KART/HAVALE/KAPIDA)", shape=parallelogram];
+    is_card [label="KART mı?", shape=diamond];
+    card_input [label="Kart bilgilerini gir", shape=parallelogram];
+    card_valid [label="Kart geçerli ve bakiye yeterli mi?", shape=diamond];
+    card_ok [label="Ödeme onaylandı", shape=parallelogram];
+    card_fail [label="Ödeme başarısız", shape=parallelogram];
+
+    is_havale [label="HAVALE mi?", shape=diamond];
+    havale_info [label="IBAN bilgisi göster", shape=parallelogram];
+
+    is_kapida [label="KAPIDA mı?", shape=diamond];
+    kapida_info [label="Kapıda ödeme seçildi", shape=parallelogram];
+
+    payment_success [label="Ödeme başarılı mı?", shape=diamond];
+    create_order [label="Sipariş oluştur, stok düş", shape=box];
+    order_ok [label="Sipariş başarıyla oluşturuldu", shape=parallelogram];
+    order_fail [label="Sipariş oluşturulamadı", shape=parallelogram];
+
+    again_q [label="Yeni alışveriş yapmak ister misiniz?", shape=diamond];
+    thanks [label="Ziyaretiniz için teşekkürler", shape=parallelogram];
+
+    start -> init -> login_choice -> login_check;
+    login_check -> login_ok [label="EVET"];
+    login_check -> login_guest [label="HAYIR"];
+
+    login_ok -> ask_product;
+    login_guest -> ask_product;
+
+    ask_product -> check_exit;
+    check_exit -> show_cart [label="EVET"];
+    check_exit -> ask_qty [label="HAYIR"];
+
+    ask_qty -> stock_check;
+    stock_check -> add_cart [label="EVET"];
+    stock_check -> stock_fail [label="HAYIR"];
+
+    add_cart -> ask_product;
+    stock_fail -> ask_product;
+
+    show_cart -> change_qty_q;
+    change_qty_q -> ask_new_qty [label="EVET"];
+    change_qty_q -> ask_coupon [label="HAYIR"];
+
+    ask_new_qty -> check_new_stock;
+    check_new_stock -> update_qty [label="EVET"];
+    check_new_stock -> fail_qty [label="HAYIR"];
+    update_qty -> ask_coupon;
+    fail_qty -> ask_coupon;
+
+    ask_coupon -> check_coupon;
+    check_coupon -> apply_coupon [label="EVET"];
+    check_coupon -> invalid_coupon [label="HAYIR"];
+
+    apply_coupon -> ask_address;
+    invalid_coupon -> ask_address;
+
+    ask_address -> calc_shipping -> check_free_ship;
+    check_free_ship -> free_ship [label="EVET"];
+    check_free_ship -> calc_total [label="HAYIR"];
+    free_ship -> calc_total;
+
+    calc_total -> show_total -> payment_method;
+
+    payment_method -> is_card;
+    is_card -> card_input [label="EVET"];
+    is_card -> is_havale [label="HAYIR"];
+
+    card_input -> card_valid;
+    card_valid -> card_ok [label="EVET"];
+    card_valid -> card_fail [label="HAYIR"];
+
+    card_ok -> payment_success;
+    card_fail -> payment_success;
+
+    is_havale -> havale_info [label="EVET"];
+    is_havale -> is_kapida [label="HAYIR"];
+    havale_info -> payment_success;
+
+    is_kapida -> kapida_info [label="EVET"];
+    is_kapida -> payment_success [label="HAYIR"];
+    kapida_info -> payment_success;
+
+    payment_success -> create_order [label="EVET"];
+    payment_success -> order_fail [label="HAYIR"];
+
+    create_order -> order_ok -> again_q;
+    order_fail -> again_q;
+
+    again_q -> ask_product [label="EVET"];
+    again_q -> thanks [label="HAYIR"];
+    thanks -> end;
+}
