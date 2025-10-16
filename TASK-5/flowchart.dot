@@ -1,0 +1,80 @@
+Öğrenci Ad-Soyad: Ebubekir Yılmaz
+Öğrenci No: 250541051
+digraph SmartHomeSecurity {
+    // Genel Ayarlar
+    rankdir=TB;
+    node [shape=box, style=filled, fillcolor="#F3F4F6", fontname="Inter"];
+    edge [fontname="Inter"];
+
+    // Başlangıç ve Sürekli Döngü
+    start [label="SİSTEM BAŞLAT", shape=oval, fillcolor="#10B981", fontcolor="#FFFFFF"];
+    end_loop [label="Döngü Başı (Sürekli Çalışma)", shape=box, fillcolor="#34D399", fontcolor="#FFFFFF"];
+    
+    start -> end_loop;
+
+    // 1. Sistem Aktif mi? (Koşul)
+    aktif_check [label="Sistem Aktif mi?", shape=diamond, fillcolor="#FCD34D"];
+    end_loop -> aktif_check;
+    
+    // Pasif Akış
+    pasif_wait [label="Sistem Pasif: 5 Sn Bekle", fillcolor="#9CA3AF"];
+    aktif_check -> pasif_wait [label="Hayır"];
+    pasif_wait -> end_loop [label="Sürekli", style=dashed, color="#9CA3AF"];
+    
+    // Aktif Akış
+    sensor_read [label="Tüm Sensörleri Oku (Hareket, Kapı/Pencere)", fillcolor="#DBEAFE"];
+    aktif_check -> sensor_read [label="Evet"];
+
+    // 2. Tehdit Algılama (Koşul)
+    threat_check [label="Hareket VEYA Erişim Açık mı?", shape=diamond, fillcolor="#FCD34D"];
+    sensor_read -> threat_check;
+    
+    // Tehdit Yok
+    threat_check -> end_loop [label="Hayır", color="#9CA3AF"]; // Ana döngü başına geri dön (Sürekli)
+    
+    // Tehdit Var
+    camera_on [label="Kamera Kaydını Başlat", fillcolor="#FEE2E2"];
+    threat_check -> camera_on [label="Evet"];
+    
+    // 3. Yanlış Alarm Kontrolü (Koşul)
+    home_owner_check [label="Ev Sahibi Evde mi?", shape=diamond, fillcolor="#FCD34D"];
+    camera_on -> home_owner_check;
+    
+    // 4a. Düşük Alarm (Ev Sahibi Evde)
+    low_alarm [label="Alarm Seviyesi = 1 (Düşük)", fillcolor="#FEEFD0"];
+    home_owner_check -> low_alarm [label="Evet (Yanlış Alarm İhtimali)"];
+    
+    // 4b. Gerçek Tehdit Seviyesi Belirleme (Ev Sahibi Dışarıda)
+    high_threat_check [label="Kapı/Pencere VE Hareket Var mı?", shape=diamond, fillcolor="#FCD34D"];
+    home_owner_check -> high_threat_check [label="Hayır"];
+
+    medium_alarm [label="Alarm Seviyesi = 2 (Orta)", fillcolor="#FDCF7A"];
+    high_threat_check -> medium_alarm [label="Hayır"];
+
+    high_alarm [label="Alarm Seviyesi = 3 (Yüksek)", fillcolor="#EF4444", fontcolor="#FFFFFF"];
+    high_threat_check -> high_alarm [label="Evet"];
+
+    // 5. Alarm ve Bildirim Eylemi
+    alarm_action [label="Alarmı Çalıştır & Bildirim Gönder (SMS/App/Email)", fillcolor="#EF4444", fontcolor="#FFFFFF"];
+    
+    low_alarm -> alarm_action;
+    medium_alarm -> alarm_action;
+    high_alarm -> alarm_action;
+    
+    // 6. Alarm Sıfırlama/Devam Ettirme Döngüsü
+    reset_loop_start [label="Alarm Kontrol Döngüsü Başlat", fillcolor="#DBEAFE"];
+    alarm_action -> reset_loop_start;
+
+    user_reset_check [label="Kullanıcıdan Sıfırlama Komutu Geldi mi?", shape=diamond, fillcolor="#FCD34D"];
+    reset_loop_start -> user_reset_check;
+
+    wait_10s [label="10 Saniye Bekle", fillcolor="#DBEAFE"];
+    user_reset_check -> wait_10s [label="Hayır"];
+    wait_10s -> user_reset_check [label="Tekrar Kontrol Et", style=dashed];
+
+    alarm_reset [label="Alarmı Sıfırla & Kamerayı Kapat", fillcolor="#10B981", fontcolor="#FFFFFF"];
+    user_reset_check -> alarm_reset [label="Evet"];
+
+    // Ana Döngüye Geri Dönüş
+    alarm_reset -> end_loop [label="Ana Döngüye Dön"];
+}
