@@ -1,0 +1,49 @@
+Öğrenci Ad-Soyad: Ebubekir Yılmaz
+Öğrenci No: 250541051
+digraph DersKayitSistemi {
+    rankdir=TB;
+    node [shape=box, style="filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    start [shape=oval, label="BAŞLA"];
+    giris [shape=box, label="Kullanıcı Girişi"];
+    kimlik_dogrulama [shape=diamond, label="Kimlik Doğrulama Başarılı?"];
+    ders_listesi [shape=box, label="Ders Listesini Görüntüle"];
+    ders_secimi [shape=box, label="Dersleri Seç"];
+
+    // Kontrol Mekanizmaları
+    kontenjan_kontrol [shape=diamond, label="Kontenjan Dolu Mu?"];
+    onkosul_kontrol [shape=diamond, label="Ön Koşullar Sağlandı Mı?"];
+    zaman_cakismasi_kontrol [shape=diamond, label="Zaman Çakışması Var Mı?"];
+    kredi_limiti_kontrol [shape=diamond, label="Kredi Limiti Aşıldı Mı?"];
+
+    // Onay ve Sonuçlar
+    danisman_onayi_bekle [shape=box, label="Danışman Onayı Bekle"];
+    danisman_onay [shape=diamond, label="Danışman Onayladı Mı?"];
+    kayit_basarili [shape=oval, label="Kayıt Başarılı", fillcolor="#9ACD32"];
+    kayit_basarisiz [shape=oval, label="Kayıt Başarısız", fillcolor="#FFB2B2"];
+
+    // Akış Bağlantıları
+    start -> giris;
+    giris -> kimlik_dogrulama;
+    kimlik_dogrulama -> ders_listesi [label="Evet"];
+    kimlik_dogrulama -> kayit_basarisiz [label="Hayır"];
+
+    ders_listesi -> ders_secimi;
+    ders_secimi -> kontenjan_kontrol;
+    kontenjan_kontrol -> onkosul_kontrol [label="Hayır"];
+    kontenjan_kontrol -> kayit_basarisiz [label="Evet"];
+    
+    onkosul_kontrol -> zaman_cakismasi_kontrol [label="Evet"];
+    onkosul_kontrol -> kayit_basarisiz [label="Hayır"];
+    
+    zaman_cakismasi_kontrol -> kredi_limiti_kontrol [label="Hayır"];
+    zaman_cakismasi_kontrol -> kayit_basarisiz [label="Evet"];
+    
+    kredi_limiti_kontrol -> danisman_onayi_bekle [label="Hayır"];
+    kredi_limiti_kontrol -> kayit_basarisiz [label="Evet"];
+    
+    danisman_onayi_bekle -> danisman_onay;
+    danisman_onay -> kayit_basarili [label="Evet"];
+    danisman_onay -> kayit_basarisiz [label="Hayır"];
+}
