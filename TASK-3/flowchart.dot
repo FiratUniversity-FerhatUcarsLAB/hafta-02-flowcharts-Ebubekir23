@@ -1,0 +1,72 @@
+Öğrenci Ad-Soyad: Ebubekir Yılmaz
+Öğrenci No: 250541051
+digraph HastaneSistemi {
+    rankdir=TB;
+    node [shape=box, style="filled", fontname="Helvetica"];
+    edge [fontname="Helvetica"];
+
+    // Başlangıç ve Modül Seçimi
+    Start [shape=oval, label="BAŞLA", fillcolor="#B4F4B4"];
+    ModulSecimi [shape=diamond, label="Hangi modüle gitmek istersiniz?", fillcolor="#FFE0B2"];
+    
+    // Randevu Alma Modülü
+    subgraph cluster_randevu_alma {
+        label = "Randevu Alma";
+        style=filled;
+        color=lightgrey;
+
+        RA_KimlikDogrulama [shape=diamond, label="Kimlik Doğrulama Başarılı?", fillcolor="#F2C8C8"];
+        RA_Poliklinik [shape=parallelogram, label="Poliklinik Seçimi", fillcolor="#CDE2FF"];
+        RA_Doktor [shape=parallelogram, label="Doktor Seçimi", fillcolor="#CDE2FF"];
+        RA_Saat [shape=parallelogram, label="Saat Seçimi", fillcolor="#CDE2FF"];
+        RA_Onay [shape=diamond, label="Randevuyu Onayla?", fillcolor="#F2C8C8"];
+        RA_Kaydet [shape=box, label="Randevuyu Kaydet", fillcolor="#9ACD32"];
+        RA_SMS [shape=box, label="SMS Gönder", fillcolor="#9ACD32"];
+    }
+
+    // Tahlil Sonuçları Modülü
+    subgraph cluster_tahlil_sonuclari {
+        label = "Tahlil Sonuçları";
+        style=filled;
+        color=lightgrey;
+
+        TS_KimlikDogrulama [shape=diamond, label="Kimlik Doğrulama Başarılı?", fillcolor="#F2C8C8"];
+        TS_TahlilVarmi [shape=diamond, label="Adına Kayıtlı Tahlil Var Mı?", fillcolor="#F2C8C8"];
+        TS_SonucHazir [shape=diamond, label="Sonuçlar Hazır Mı?", fillcolor="#F2C8C8"];
+        TS_Goster [shape=box, label="Sonuçları Görüntüle", fillcolor="#ADD8E6"];
+        TS_PDF [shape=box, label="PDF Olarak İndir", fillcolor="#ADD8E6"];
+        TS_BeklemeMesaji [shape=box, label="Bekleme Mesajı Göster", fillcolor="#FFB2B2"];
+        TS_TahlilYokMesaji [shape=box, label="Tahlil Bulunamadı Mesajı Göster", fillcolor="#FFB2B2"];
+    }
+
+    // Ortak Bitiş Noktası
+    End [shape=oval, label="BİTİR", fillcolor="#FFB2B2"];
+
+    // Bağlantılar
+    Start -> ModulSecimi;
+    
+    // Randevu Alma Akışı
+    ModulSecimi -> RA_KimlikDogrulama [label="Randevu"];
+    RA_KimlikDogrulama -> RA_Poliklinik [label="Evet"];
+    RA_KimlikDogrulama -> End [label="Hayır"];
+    RA_Poliklinik -> RA_Doktor;
+    RA_Doktor -> RA_Saat;
+    RA_Saat -> RA_Onay;
+    RA_Onay -> RA_Kaydet [label="Evet"];
+    RA_Onay -> End [label="Hayır"];
+    RA_Kaydet -> RA_SMS;
+    RA_SMS -> End;
+    
+    // Tahlil Sonuçları Akışı
+    ModulSecimi -> TS_KimlikDogrulama [label="Tahlil Sonuçları"];
+    TS_KimlikDogrulama -> TS_TahlilVarmi [label="Evet"];
+    TS_KimlikDogrulama -> End [label="Hayır"];
+    TS_TahlilVarmi -> TS_SonucHazir [label="Evet"];
+    TS_TahlilVarmi -> TS_TahlilYokMesaji [label="Hayır"];
+    TS_TahlilYokMesaji -> End;
+    TS_SonucHazir -> TS_Goster [label="Evet"];
+    TS_SonucHazir -> TS_BeklemeMesaji [label="Hayır"];
+    TS_BeklemeMesaji -> End;
+    TS_Goster -> TS_PDF;
+    TS_PDF -> End;
+}
