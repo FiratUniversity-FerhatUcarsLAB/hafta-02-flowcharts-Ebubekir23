@@ -1,0 +1,66 @@
+Öğrenci Ad-Soyad: Ebubekir Yılmaz
+Öğrenci No: 250541051
+digraph ATM {
+    rankdir=TB;
+    node [fontname="Arial"];
+
+    // Şekil tanımları
+    start [label="BAŞLA", shape=oval, style=filled, fillcolor=lightgreen];
+    end [label="BİTİR", shape=oval, style=filled, fillcolor=lightgreen];
+    init [label="günlük_limit=5000\nbakiye=10000\ndeneme_hakkı=3", shape=box];
+    pin_input [label="PIN gir", shape=parallelogram];
+    check_pin [label="PIN doğru mu?", shape=diamond];
+    pin_ok [label="PIN doğrulandı", shape=parallelogram];
+    pin_fail [label="Hatalı PIN\nKalan hak: deneme_hakkı-1", shape=parallelogram];
+    pin_block [label="Kart bloke\nBanka ile iletişime geçiniz", shape=parallelogram];
+
+    ask_amount [label="Tutar gir (20 TL katı)", shape=parallelogram];
+    check_multiple [label="Tutar 20'nin katı mı?", shape=diamond];
+    invalid_multiple [label="Hatalı tutar\n20 TL katı olmalı", shape=parallelogram];
+
+    check_limit [label="Tutar > günlük limit mi?", shape=diamond];
+    over_limit [label="Limit aşıldı", shape=parallelogram];
+
+    check_balance [label="Tutar > bakiye mi?", shape=diamond];
+    insufficient [label="Yetersiz bakiye", shape=parallelogram];
+
+    withdraw [label="bakiye ← bakiye - tutar\ngünlük_limit ← günlük_limit - tutar", shape=box];
+    success [label="İşlem başarılı\nYeni bakiye ve limit göster", shape=parallelogram];
+
+    ask_repeat [label="Başka işlem? (E/H)", shape=parallelogram];
+    check_repeat [label="cevap = E mi?", shape=diamond];
+    goodbye [label="İyi günler dileriz", shape=parallelogram];
+
+    // Akış
+    start -> init -> pin_input -> check_pin;
+
+    check_pin -> pin_ok [label="Evet"];
+    check_pin -> pin_fail [label="Hayır"];
+
+    pin_fail -> pin_input [label="Kalan hak > 0"];
+    pin_fail -> pin_block [label="Kalan hak = 0"];
+
+    pin_block -> end;
+    pin_ok -> ask_amount;
+
+    // Tutar kontrol akışı
+    ask_amount -> check_multiple;
+    check_multiple -> invalid_multiple [label="Hayır"];
+    invalid_multiple -> ask_amount;
+    check_multiple -> check_limit [label="Evet"];
+
+    check_limit -> over_limit [label="Evet"];
+    over_limit -> ask_amount;
+    check_limit -> check_balance [label="Hayır"];
+
+    check_balance -> insufficient [label="Evet"];
+    insufficient -> ask_amount;
+    check_balance -> withdraw [label="Hayır"];
+
+    withdraw -> success -> ask_repeat;
+    ask_repeat -> check_repeat;
+    check_repeat -> ask_amount [label="Evet"];
+    check_repeat -> goodbye [label="Hayır"];
+
+    goodbye -> end;
+}
